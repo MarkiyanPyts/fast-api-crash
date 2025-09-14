@@ -80,3 +80,7 @@ def delete_todo(todo_id: int):
             del all_todos[i]
             return todo
     raise HTTPException(status_code=404, detail="Todo not found")
+
+@api.get('/')
+def root():
+    return {"message": "Welcome to the Todo API!"}
