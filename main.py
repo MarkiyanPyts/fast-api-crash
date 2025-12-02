@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional, List
 from enum import IntEnum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from pydantic.alias_generators import to_camel
 
 app = FastAPI()
 
@@ -11,6 +12,8 @@ class Priority(IntEnum):
     HIGH = 3
 
 class TodoBase(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    
     todo_name: str = Field(..., min_length=3, max_length=512, description="Name of the todo item")
     todo_description: str = Field(..., min_length=3, max_length=1024, description="Description of the todo item")
     priority: Priority = Field(Priority.LOW, example=Priority.LOW, description="Priority of the todo item")
@@ -19,6 +22,8 @@ class TodoCreate(TodoBase):
     pass
 
 class TodoUpdate(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    
     todo_name: Optional[str] = Field(None, min_length=3, max_length=512, description="Name of the todo item")
     todo_description: Optional[str] = Field(None, min_length=3, max_length=1024, description="Description of the todo item")
     priority: Optional[Priority] = Field(None, example=Priority.LOW, description="Priority of the todo item")
