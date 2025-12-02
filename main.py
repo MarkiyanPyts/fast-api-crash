@@ -3,7 +3,7 @@ from typing import Optional, List
 from enum import IntEnum
 from pydantic import BaseModel, Field
 
-api = FastAPI()
+app = FastAPI()
 
 class Priority(IntEnum):
     LOW = 1
@@ -34,21 +34,21 @@ all_todos = [
     Todo(todo_id=4, todo_name='Shopping', todo_description='Buy groceries', priority=Priority.LOW),
 ]
 
-@api.get('/todos/{todo_id}', response_model=Todo)
+@app.get('/todos/{todo_id}', response_model=Todo)
 def get_todo(todo_id: int):
     for todo in all_todos:
         if todo.todo_id == todo_id:
             return todo
     raise HTTPException(status_code=404, detail="Todo not found")
 
-@api.get('/todos', response_model=List[Todo])
+@app.get('/todos', response_model=List[Todo])
 def get_todos(first_n: int = None):
     if first_n is not None:
         return all_todos[:first_n]
     else:
         return all_todos
     
-@api.post('/todos', response_model=Todo)
+@app.post('/todos', response_model=Todo)
 def create_todo(todo: TodoCreate):
     new_todo_id = max(todo.todo_id for todo in all_todos) + 1
     
@@ -63,7 +63,7 @@ def create_todo(todo: TodoCreate):
 
     return new_todo
 
-@api.put('/todos/{todo_id}', response_model=Todo)
+@app.put('/todos/{todo_id}', response_model=Todo)
 def update_todo(todo_id: int, updated_todo: TodoUpdate):
     for todo in all_todos:
         if todo.todo_id == todo_id:
@@ -73,7 +73,7 @@ def update_todo(todo_id: int, updated_todo: TodoUpdate):
             return {"message": "Todo updated successfully", "todo": todo}
     raise HTTPException(status_code=404, detail="Todo not found")
 
-@api.delete('/todos/{todo_id}', response_model=Todo)
+@app.delete('/todos/{todo_id}', response_model=Todo)
 def delete_todo(todo_id: int):
     for i, todo in enumerate(all_todos):
         if todo.todo_id == todo_id:
@@ -81,6 +81,6 @@ def delete_todo(todo_id: int):
             return todo
     raise HTTPException(status_code=404, detail="Todo not found")
 
-@api.get('/')
+@app.get('/')
 def root():
     return {"message": "Welcome to the Todo API!"}
